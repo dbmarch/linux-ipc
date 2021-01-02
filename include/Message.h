@@ -1,3 +1,6 @@
+#ifndef MESSAGE_H__
+#define MESSAGE_H__
+
 #include <cstring>
 #include <stdlib.h>
 #include <stdint.h>
@@ -60,3 +63,5 @@ class Message
       size_t mLen{0};
       uint8_t mBuf[MAX_MSG_SIZE];
 };
+
+#endif

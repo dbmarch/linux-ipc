@@ -1,3 +1,6 @@
+#ifndef TQUEUECONCURRENT_H__
+#define TQUEUECONCURRENT_H__
+
 #include <deque>
 #include <mutex>
 #include <condition_variable>
@@ -65,4 +68,6 @@ private:
     std::deque<T> _collection;                     ///< Concrete, not thread safe, storage.
     std::mutex   _mutex;                    ///< Mutex protecting the concrete storage
     std::condition_variable _condNewData;   ///< Condition used to notify that new data are available.
-};s
+};
+
+#endif
