@@ -41,7 +41,7 @@ bool LocalSender::Initialize()
 
    if (connect(mFd, (struct sockaddr*)&addr, sizeof(addr)) == -1) 
    {
-      if (mTrace) printf ("%s connect failed '%s'\n", __func__, strerror(errno));
+      printf ("%s connect failed '%s'\n", __func__, strerror(errno));
       Close();
       return false;
    }

@@ -25,7 +25,7 @@ public:
 
   virtual ~StringReceiver(){}
 
-  virtual void Callback (void * payload, int count) { printf ("RX CB %s\n", (char*) payload); }
+  virtual void Callback (void * payload, int count) override { printf ("RX CB %s\n", (char*) payload); }
    
 
 };

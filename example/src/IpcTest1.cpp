@@ -27,7 +27,8 @@ int main(int argc, char* argv[])
   StringReceiver rx("test1");
   StringSender   tx("test2");
 
-  rx.Initialize();
+  if (!rx.Initialize())
+    printf ("rx failed to initialize\n");
 
   std::string msg("Hello from #1\n");
   

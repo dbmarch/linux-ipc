@@ -79,14 +79,27 @@ void LocalReceiver::ReceiveThread() {
   mRunning = true;
   printf ("Rx thread running\n");
 
+  int cl = -1;
   while (mRunning)  {
-     int rc = read(mFd, buf, sizeof(buf));
+
+    if (cl == -1) {
+      cl = accept(mFd, nullptr, nullptr);
+      if ( cl == -1) {
+        perror("accept error");
+        continue;
+      }
+    }
+
+    if (cl >= 0) {
+     int rc = read(cl, buf, sizeof(buf));
      if (rc  > 0) {
        Callback(buf, rc);
      } else if (rc == -1) {
        printf ("Read error %s\n", strerror(errno));
        sleep(1);
      }
+
+    }
   }
   printf ("Receive Thread shutting down\n");
 }
