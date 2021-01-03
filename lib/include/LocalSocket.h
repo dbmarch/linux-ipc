@@ -33,7 +33,7 @@ public:
 
 
 protected:
-   void Close ();
+   virtual void Close ();
 
    std::string mName;
 

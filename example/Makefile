@@ -2,11 +2,11 @@
 CC          := g++
 AR          := ar
 
-EXE_1	  := IpcTest
-OBJ_1    := obj/IpcTest.o
+EXE_1	  := IpcTest1
+OBJ_1    := obj/IpcTest1.o
 
-# EXE_2   := Fifo1
-# OBJ_2   := obj/Fifo1.o
+EXE_2   := IpcTest2
+OBJ_2   := obj/IpcTest2.o
 
 # EXE_3   := Fifo2
 # OBJ_3   := obj/Fifo2.o
@@ -29,9 +29,8 @@ OBJ_1    := obj/IpcTest.o
 
 TARGET  :=   \
   $(EXE_1)   \
-	
-	
-	# $(EXE_2)   \
+  $(EXE_2)   \
+
 	# $(EXE_3)   \
 	# $(EXE_4)   \
 	# $(EXE_5)   \
@@ -53,7 +52,7 @@ MY_LIB      := Ipc
 
 #Flags, Libraries and Includes
 CFLAGS      := -Wall -O3 -g -std=c++11
-LIB         := -lm -lpthread -L./bin -L../bin -l$(MY_LIB)
+LIB         := -pthread -lm -lpthread -L./bin -L../bin -l$(MY_LIB)
 INC         := -I$(INCDIR) -I$(LIB_INC) -I/usr/local/include 
 INCDEP      := -I$(INCDIR) -I$(LIB_INC)
 

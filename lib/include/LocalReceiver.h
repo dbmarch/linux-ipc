@@ -1,12 +1,14 @@
 #ifndef LOCAL_RECEIVER_H__
 #define LOCAL_RECEIVER_H__
 
+#include <thread>
 #include "LocalSocket.h"
 
 
 class LocalReceiverClient
 {
 public:
+  
    LocalReceiverClient () =default;
    virtual ~LocalReceiverClient () =default;
    
@@ -27,10 +29,15 @@ public:
 
    virtual bool Initialize() override;
 
-protected:
+   virtual void ReceiveThread();
 
+protected:
+   virtual void Close() override; 
 
 private:
+   std::thread mThread;
+
+   bool mRunning{false};
 };
 
 #endif

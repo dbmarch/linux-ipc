@@ -53,7 +53,7 @@ bool LocalSender::Initialize()
 //******************************************************************************
 // FUNCTION:  LocalSender::Initialize
 //******************************************************************************
-bool LocalSender::Write(LocalSocket::Buffer buf)
+bool LocalSender::Write(const LocalSocket::Buffer &buf)
 {
    int sz  = buf.size();
    

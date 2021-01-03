@@ -1,4 +1,5 @@
 #include <sys/socket.h>
+#include <unistd.h>
 #include <sys/un.h>
 #include <errno.h>
 
@@ -11,6 +12,7 @@ LocalReceiver::LocalReceiver(std::string name) :
    LocalSocket(name,LocalSocket::RECEIVER )
 {
    if (mTrace) printf ("%s '%s' %s\n", __func__, mName.c_str(), ToString(mType).c_str());
+
 }
 
 //******************************************************************************
@@ -40,19 +42,52 @@ bool LocalReceiver::Initialize()
  
    if (bind(mFd, (struct sockaddr*)&addr, sizeof(addr)) == -1) 
    {
-     if (mTrace) printf ("%s bind error '%s'\n", __func__, strerror(errno));
+     printf ("%s bind error '%s'\n", __func__, strerror(errno));
      Close();
      return false;
    }
    if (listen(mFd, 5) == -1) 
    {
-     if (mTrace) printf ("%s listen error '%s'\n", __func__, strerror(errno));
+     printf ("%s listen error '%s'\n", __func__, strerror(errno));
      Close();
      return false;
    }
 
-   std::string test("Test the callback");
-   Callback((void*) test.c_str(), test.length());
-   return true;
+   mThread = std::thread(&LocalReceiver::ReceiveThread, this);
+  return (true);
+}
+
+//******************************************************************************
+// FUNCTION:  LocalReceiver::~LocalReceiver
+//******************************************************************************
+void LocalReceiver::Close()
+{
+  mRunning  = false;
+  if (mThread.joinable()) {
+    mThread.join();
+  }
+  LocalSocket::Close();
+
+}
+
+//******************************************************************************
+// FUNCTION:  LocalReceiver::ReceiveThread
+//******************************************************************************
+void LocalReceiver::ReceiveThread() {
+  char buf[4096];
+
+  mRunning = true;
+  printf ("Rx thread running\n");
+
+  while (mRunning)  {
+     int rc = read(mFd, buf, sizeof(buf));
+     if (rc  > 0) {
+       Callback(buf, rc);
+     } else if (rc == -1) {
+       printf ("Read error %s\n", strerror(errno));
+       sleep(1);
+     }
+  }
+  printf ("Receive Thread shutting down\n");
 }
 

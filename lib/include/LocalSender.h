@@ -17,7 +17,7 @@ public:
 
    virtual bool Initialize() override;
 
-   bool Write(LocalSocket::Buffer buf);
+   bool Write(const LocalSocket::Buffer &buf);
 
 protected:
 

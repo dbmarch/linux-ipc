@@ -9,7 +9,7 @@ LocalSocket::LocalSocket(std::string portName, LocalSocket::LocalSocketType port
    mName(portName),
    mType(portType)
 {
-   if (mTrace) printf ("%s '%s' %s\n", __func__, mName.c_str(), ToString(mType).c_str());
+   // if (mTrace) printf ("%s '%s' %s\n", __func__, mName.c_str(), ToString(mType).c_str());
 }
 
 //*****************************************************************************
@@ -18,6 +18,7 @@ LocalSocket::LocalSocket(std::string portName, LocalSocket::LocalSocketType port
 LocalSocket::~LocalSocket()
 {
    Close();
+
 }
 
 //*****************************************************************************
