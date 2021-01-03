@@ -27,8 +27,9 @@ int main(int argc, char*argv[])
 
   while (serverRunning) {
     if (!initialized) {
-      tx.Initialize();
-      initialized = true;
+      if (tx.Initialize()){
+        initialized = true;
+      }
     }
     sleep(1);
     if (initialized) {

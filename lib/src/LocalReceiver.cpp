@@ -53,52 +53,85 @@ bool LocalReceiver::Initialize()
      return false;
    }
 
-   mThread = std::thread(&LocalReceiver::ReceiveThread, this);
+   mAcceptThread = std::thread(&LocalReceiver::AcceptThread, this);
   return (true);
 }
 
 //******************************************************************************
-// FUNCTION:  LocalReceiver::~LocalReceiver
+// FUNCTION:  LocalReceiver::Close
 //******************************************************************************
 void LocalReceiver::Close()
 {
+  mAccepting = false;
   mRunning  = false;
-  if (mThread.joinable()) {
-    mThread.join();
+  if (mAcceptThread.joinable()) {
+    mAcceptThread.join();
   }
   LocalSocket::Close();
-
 }
+
+//******************************************************************************
+// FUNCTION:  LocalReceiver::AcceptThread
+//******************************************************************************
+void LocalReceiver::AcceptThread() {
+
+  mAccepting = true;
+  printf ("Rx Accept running\n");
+
+  int cl = -1;
+  while (mAccepting)  {
+    if (mFd == -1) {
+      Initialize();
+    }
+
+    if (mFd >= 0) {
+      if (cl == -1) {
+        cl = accept(mFd, nullptr, nullptr);
+        if ( cl == -1) {
+          perror("accept error");
+          continue;
+        }
+      }
+      if (cl >= 0) {
+         mThread = std::thread(&LocalReceiver::ReceiveThread, this, cl);
+         mAcceptList.push_back(std::move(mThread));
+         cl = -1;
+      }
+    }
+  }
+  for (unsigned i = 0; i < mAcceptList.size(); i++) {
+    if (mAcceptList[i].joinable()) {
+      mAcceptList[i].join();
+    }
+  }
+  mAcceptList.clear();
+        
+  printf ("Receive Thread shutting down\n");
+}
+
+
 
 //******************************************************************************
 // FUNCTION:  LocalReceiver::ReceiveThread
 //******************************************************************************
-void LocalReceiver::ReceiveThread() {
+void LocalReceiver::ReceiveThread(int s) {
   char buf[4096];
 
   mRunning = true;
   printf ("Rx thread running\n");
 
-  int cl = -1;
-  while (mRunning)  {
-
-    if (cl == -1) {
-      cl = accept(mFd, nullptr, nullptr);
-      if ( cl == -1) {
-        perror("accept error");
-        continue;
-      }
-    }
-
-    if (cl >= 0) {
-     int rc = read(cl, buf, sizeof(buf));
+  
+  while (mRunning && s != -1)  {
+    if (s >= 0) {
+     int rc = read(s, buf, sizeof(buf));
      if (rc  > 0) {
        Callback(buf, rc);
      } else if (rc == -1) {
        printf ("Read error %s\n", strerror(errno));
+       close(s);
+       s = -1;
        sleep(1);
      }
-
     }
   }
   printf ("Receive Thread shutting down\n");

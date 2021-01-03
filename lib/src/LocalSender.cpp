@@ -57,11 +57,16 @@ bool LocalSender::Write(const LocalSocket::Buffer &buf)
 {
    int sz  = buf.size();
    
+   if ( mFd == -1) {
+      Initialize();
+   }
+
    int rc  = write(mFd, buf.data(), sz);
    
    if (rc == -1) 
    {
       if (mTrace) printf ("%s ERROR '%s'\n", __func__, strerror(errno));
+      Close();
       return false;
    }
    else if ( rc != sz)

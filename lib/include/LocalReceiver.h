@@ -29,15 +29,21 @@ public:
 
    virtual bool Initialize() override;
 
-   virtual void ReceiveThread();
+   virtual void ReceiveThread(int s );
+   virtual void AcceptThread();
 
 protected:
    virtual void Close() override; 
 
 private:
-   std::thread mThread;
+   std::thread mThread{};
+   std::thread mAcceptThread{};
+
 
    bool mRunning{false};
+   bool mAccepting{false};
+
+   std::vector<std::thread> mAcceptList{};
 };
 
 #endif
